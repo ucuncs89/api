@@ -1,7 +1,8 @@
 'use strict';
 
 const Hapi = require('@hapi/hapi');
-
+const Joi = require('joi')
+const TodoController = require('./controllers/TodoController');
 const init = async () => {
 
     const server = Hapi.server({
@@ -16,7 +17,7 @@ const init = async () => {
 
     const knex = require('knex')({
         client: 'pg',
-        connection: 'postgres://postgres:asdf1234@localhost:5432/todo'
+        connection: 'postgres://postgres:asdf1234@localhost:5432/db_todo'
     });
 
     server.route({
@@ -44,14 +45,13 @@ const init = async () => {
         }
     });
 
-    server.route({
+     server.route({
     method: 'POST',
     path: '/todo',
     handler: function (request, h) {
-        const id = request.payload.id;
         const name = request.payload.name;
         const date = request.payload.date;
-        return knex('todo').insert({id: id, name: name, date: date});
+        return knex('todo').insert({name: name, date: date});
         }
     });
 
@@ -71,7 +71,7 @@ const init = async () => {
     path: '/todo/{id}',
     handler: function (request, h) {
         const id = request.params.id;
-        return knex('todo').where('id', id).del(),reply('success')
+        return knex('todo').where('id', id).del()
         }
     });
 
